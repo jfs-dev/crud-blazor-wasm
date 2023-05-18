@@ -1,0 +1,47 @@
+@page "/clientes/delete/{id:int}"
+@using blazor_wasm.Models
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<h1>Excluir @model?.Nome</h1>
+
+@if (model == null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="loader"></div>
+    </div>
+}
+else
+{
+    <EditForm Model="@model" OnValidSubmit="@HandleSubmit">
+        <div class="mb-3">
+            <label for="Nome" class="form-label">Nome</label>
+            <InputText readonly class="form-control" type="text" id="Nome" @bind-Value="model.Nome"/>
+        </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">e-mail</label>
+            <InputText readonly class="form-control" type="email" id="Email" @bind-Value="model.Email"/>
+        </div>
+
+        <button class="btn btn-danger" type="submit">Excluir</button>
+    </EditForm>
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Cliente? model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await Http.GetFromJsonAsync<Cliente>($"{Configuration.ApiUrl}/v1/clientes/{Id}");
+    }
+
+    private async Task HandleSubmit()
+    {
+        await Http.DeleteAsync($"{Configuration.ApiUrl}/v1/clientes/{Id}");
+        NavManager.NavigateTo("/clientes");
+    }
+}

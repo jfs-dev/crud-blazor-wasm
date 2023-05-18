@@ -1,0 +1,50 @@
+@page "/clientes"
+@using blazor_wasm.Models
+@inject HttpClient Http
+
+<h1>Clientes</h1>
+
+<a href="clientes/create" class="btn btn-primary"><i class="oi oi-plus"></i> Novo </a>
+
+@if (_clientes == null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="loader"></div>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <td>#</td>
+                <td>Nome</td>
+                <td>e-mail</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var cliente in _clientes)
+        {
+            <tr>
+                <td>@cliente.Id</td>
+                <td>@cliente.Nome</td>
+                <td>@cliente.Email</td>
+                <td>
+                    <a href="/clientes/edit/@cliente.Id">Editar</a>
+                    <a href="/clientes/delete/@cliente.Id">Excluir</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Cliente[]? _clientes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _clientes = await Http.GetFromJsonAsync<Cliente[]>($"{Configuration.ApiUrl}/v1/clientes");
+    }
+}
